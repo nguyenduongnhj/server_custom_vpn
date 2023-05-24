@@ -212,10 +212,10 @@ static int gost_ciphers (ENGINE *e,const EVP_CIPHER **cipher,
         {
         *cipher = &cipher_gost_cpacnt;
         }
-    else if  (nid == NID_gost89_cbc)
+ /*   else if  (nid == NID_gost89_cbc)
         {
         *cipher = &cipher_gost_cbc;
-        }
+        }*/
     else
         {
         ok = 0;

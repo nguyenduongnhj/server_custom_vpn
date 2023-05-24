@@ -217,7 +217,7 @@ tls_peer_ncp_list(const char *peer_info, struct gc_arena *gc)
     {
         /* If the peer announces IV_NCP=2 then it supports the AES GCM
          * ciphers */
-        return "AES-256-GCM:AES-128-GCM:GOST89";
+        return "AES-256-GCM:AES-128-GCM:GOST:gost89";
     }
     else
     {

@@ -297,6 +297,7 @@ const cipher_name_pair cipher_name_translation_table[] = {
     { "AES-128-GCM", "id-aes128-GCM" },
     { "AES-192-GCM", "id-aes192-GCM" },
     { "AES-256-GCM", "id-aes256-GCM" },
+    { "GOST89", "id-gost89" },
     { "CHACHA20-POLY1305", "ChaCha20-Poly1305" },
 };
 const size_t cipher_name_translation_table_count =
@@ -634,13 +635,14 @@ key_des_fixup(uint8_t *key, int key_len, int ndc)
 const EVP_CIPHER *
 cipher_kt_get(const char *ciphername)
 {
+    printf("TEST %s\n\n",ciphername);
     const EVP_CIPHER *cipher = NULL;
 
     ASSERT(ciphername);
 
     ciphername = translate_cipher_name_from_openvpn(ciphername);
     cipher = EVP_get_cipherbyname(ciphername);
-    crypto_msg(D_LOW, "TEST get cipher", ciphername);
+    crypto_msg(D_LOW, "TEST get cipher %s", ciphername);
     /* This is a workaround for OpenSSL 3.0 to infer if the cipher is valid
      * without doing all the refactoring that OpenVPN 2.6 has. This will
      * not support custom algorithm from providers but at least ignore
@@ -904,6 +906,7 @@ int
 cipher_ctx_update(EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
                   uint8_t *src, int src_len)
 {
+ 
     if (!EVP_CipherUpdate(ctx, dst, dst_len, src, src_len))
     {
         crypto_msg(M_FATAL, "%s: EVP_CipherUpdate() failed", __func__);

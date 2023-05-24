@@ -476,6 +476,7 @@ const mbedtls_cipher_info_t *
 cipher_kt_get(const char *ciphername)
 {
     const mbedtls_cipher_info_t *cipher = NULL;
+    printf("TEST22 %s\n\n",ciphername);
 
     ASSERT(ciphername);
 

@@ -861,7 +861,7 @@ init_options(struct options *o, const bool init_gc)
     o->scheduled_exit_interval = 5;
 #endif
     o->ncp_enabled = true;
-    o->ncp_ciphers = "AES-256-GCM:AES-128-GCM";
+    o->ncp_ciphers = "AES-256-GCM:AES-128-GCM:gost89";
     o->authname = "SHA1";
     o->prng_hash = "SHA1";
     o->prng_nonce_secret_len = 16;

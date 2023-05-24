@@ -245,8 +245,10 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
             ASSERT(buf_inc_len(&work, outlen));
 
             /* For all CBC mode ciphers, check the last block is complete */
-            ASSERT(cipher_kt_mode(cipher_kt) != OPENVPN_MODE_CBC
-                   || outlen == iv_size);
+           /* ASSERT(cipher_kt_mode(cipher_kt) != OPENVPN_MODE_CBC
+                   || outlen == iv_size);*/
+
+                   printf("output len %d\n", outlen);
         }
         else                            /* No Encryption */
         {

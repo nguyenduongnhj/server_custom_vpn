@@ -11,7 +11,7 @@
 #include <openssl/rand.h>
 #include "e_gost_err.h"
 #include "gost_lcl.h"
-
+#include "pkcs7_padding.h"
 #if !defined(CCGOST_DEBUG) && !defined(DEBUG)
 # ifndef NDEBUG
 #  define NDEBUG
@@ -45,13 +45,13 @@ static int gost_cipher_init_cbc(EVP_CIPHER_CTX *ctx, const unsigned char *key,
                                 const unsigned char *iv, int enc); 
 static int	gost_cipher_do_cbc(EVP_CIPHER_CTX *ctx, unsigned char *out,
 	const unsigned char *in, size_t inl);
-EVP_CIPHER cipher_gost_cbc = 
+EVP_CIPHER cipher_gost = 
 	{
-	NID_gost89_cbc,
-	1,/*block_size*/
+    NID_id_Gost28147_89,
+	8,/*block_size*/
 	32,/*key_size*/
 	8,/*iv_len */
-	EVP_CIPH_CFB_MODE| EVP_CIPH_NO_PADDING |
+	EVP_CIPH_CBC_MODE | EVP_CIPH_NO_PADDING | 
 	EVP_CIPH_CUSTOM_IV| EVP_CIPH_RAND_KEY | EVP_CIPH_ALWAYS_CALL_INIT,
 	gost_cipher_init_cbc,
 	gost_cipher_do_cbc,
@@ -62,8 +62,8 @@ EVP_CIPHER cipher_gost_cbc =
 	gost_cipher_ctl,
 	NULL,
 };			
-
-EVP_CIPHER cipher_gost = 
+ 
+EVP_CIPHER cipher_gost2 = 
 	{
 	NID_id_Gost28147_89,
 	1,/*block_size*/
@@ -662,8 +662,24 @@ int gost_imit_cleanup(EVP_MD_CTX *ctx)
 static int gost_cipher_init_cbc(EVP_CIPHER_CTX *ctx, const unsigned char *key,
                          const unsigned char *iv, int enc)
 {
-    return gost_cipher_init_param(ctx, key, iv, enc, NID_undef,
-                                  EVP_CIPH_CBC_MODE);
+   	struct ossl_gost_cipher_ctx *c=ctx->cipher_data;
+	gost_init(&(c->cctx),&Gost28147_CryptoProParamSetA);
+	c->key_meshing=1;
+	c->count=0;
+	if(key) {
+		printf(" \n\n\ninit key \n\n");
+	int i;
+		for (i =0 ; i <32 ; i++) {
+			printf("%02x ", key[i]);
+		}
+		printf("\n\n");
+		gost_key(&(c->cctx),key);
+		
+	}
+	if(iv) memcpy(ctx->oiv, iv, EVP_CIPHER_CTX_iv_length(ctx));
+	memcpy(ctx->iv, ctx->oiv, EVP_CIPHER_CTX_iv_length(ctx));
+ 
+	return 1;
 }
 
 
@@ -676,7 +692,29 @@ static int gost_cipher_do_cbc(EVP_CIPHER_CTX *ctx, unsigned char *out,
     int i;
     struct ossl_gost_cipher_ctx *c = ctx->cipher_data;
     unsigned char *iv = ctx->iv;
+	size_t result_len = inl;
+  /*  printf(" \n\n\n do crypto  %d len\n\n", inl);
+ printf(" \n in: ", inl);
+	int i2;
+	size_t size = inl;
+	for (i2 =0 ; i2 <size ; i2++) {
+		printf("%02x ", in[i2]);
+	}
+	printf("\n\n");
+*/
+ 
     if (ctx->encrypt) {
+
+		/*int padding_len =  8 - ( inl % 8 ) ;
+        size_t total_len = padding_len + inl;
+        
+        u8 dataPad[total_len];
+        memcpy(dataPad,in,inl);
+        in_ptr = dataPad;
+        pkcs7_padding_pad_buffer(dataPad, inl,total_len,8);
+
+		inl = total_len;*/
+
         while (inl > 0) {
 
             for (i = 0; i < 8; i++) {
@@ -688,6 +726,7 @@ static int gost_cipher_do_cbc(EVP_CIPHER_CTX *ctx, unsigned char *out,
             in_ptr += 8;
             inl -= 8;
         }
+		result_len = 0;
     } else {
         while (inl > 0) {
             unsigned char tmpiv[8];
@@ -701,6 +740,17 @@ static int gost_cipher_do_cbc(EVP_CIPHER_CTX *ctx, unsigned char *out,
             in_ptr += 8;
             inl -= 8;
         }
+ 
     }
+
+	/* printf(" \n out: ", inl);
+
+ 
+	for (i2 =0 ; i2 <size ; i2++) {
+		printf("%02x ", out[i2]);
+	}
+	printf("\n\n");
+*/ 
+ 
     return 1;
 }
