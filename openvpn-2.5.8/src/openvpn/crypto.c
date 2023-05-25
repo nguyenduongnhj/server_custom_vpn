@@ -248,7 +248,7 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
            /* ASSERT(cipher_kt_mode(cipher_kt) != OPENVPN_MODE_CBC
                    || outlen == iv_size);*/
 
-                   printf("output len %d\n", outlen);
+           //        printf("output len %d\n", outlen);
         }
         else                            /* No Encryption */
         {
