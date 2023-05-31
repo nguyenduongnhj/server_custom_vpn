@@ -124,11 +124,11 @@ tests/unit_tests/engine-key/log.txt
 tests/unit_tests/engine-key/openssl.cnf
 tests/unit_tests/engine-key/passwd
 
-src/openvpn/openvpn
-include/openvpn-plugin.h
-config-version.h
-nbproject
-test-driver
-compile
-stamp-h2
+#src/openvpn/openvpn
+#include/openvpn-plugin.h
+#config-version.h
+#nbproject
+#test-driver
+#compile
+#stamp-h2
 
